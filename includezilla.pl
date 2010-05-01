@@ -34,7 +34,7 @@ process(end-of-file) :-
 	!.
 
 process(Contents) :-
-	findIncludes(0, Contents, [], Res), Res \= [], write('Found headers: '), write(Res).
+	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes: '), write(Res).
 
 findIncludes(_, [], Curr, Curr) :- !.
 
