@@ -45,7 +45,7 @@ findIncludes(Matches, [C | Rc]) :-
 	Matches = 4, C = 'l', !, findIncludes(5, Rc) ;
 	Matches = 5, C = 'u', !, findIncludes(6, Rc) ;
 	Matches = 6, C = 'd', !, findIncludes(7, Rc) ;
-	Matches = 7, C = 'e', parseInclude(Rc, false, [], Include), write('Header found: '), write(Include), nl, fail;
+	Matches = 7, C = 'e', parseInclude(Rc, false, [], Include), write('Header found: '), write(Include), nl, fail ;
 	findIncludes(0, Rc).
 
 parseInclude([C | _], Accumulate, Accum, Accum) :-
@@ -68,7 +68,6 @@ parseInclude([C | Rc], Accumulate, Accum, Include) :-
 getFileContents(In, XS) :-
     get_char(In, X),
     (X = end_of_file ->
-         XS = []
-    ;    getFileContents(In, XS1),
-         XS = [X | XS1]
+         XS = [] ;
+		 getFileContents(In, XS1), XS = [X | XS1]
     ).
