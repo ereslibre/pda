@@ -34,21 +34,22 @@ process(end-of-file) :-
 	!.
 
 process(Contents) :-
-	findIncludes(0, Contents).
+	findIncludes(0, Contents, 0, Res), Res \= 0.
 
-findIncludes(_, []) :- !.
+findIncludes(_, [], Curr, Curr) :- !.
 
-findIncludes(Matches, [C | Rc]) :-
-	Matches = 0, C = '#', !, findIncludes(1, Rc) ;
-	Matches = 1, C = ' ', !, findIncludes(1, Rc) ;
-	Matches = 1, C = 'i', !, findIncludes(2, Rc) ;
-	Matches = 2, C = 'n', !, findIncludes(3, Rc) ;
-	Matches = 3, C = 'c', !, findIncludes(4, Rc) ;
-	Matches = 4, C = 'l', !, findIncludes(5, Rc) ;
-	Matches = 5, C = 'u', !, findIncludes(6, Rc) ;
-	Matches = 6, C = 'd', !, findIncludes(7, Rc) ;
-	Matches = 7, C = 'e', parseInclude(Rc, false, [], Include), write('Header found: '), write(Include), nl, fail ;
-	findIncludes(0, Rc).
+findIncludes(Matches, [C | Rc], Curr, Res) :-
+	Matches = 0, C = '#', !, findIncludes(1, Rc, Curr, Res) ;
+	Matches = 1, C = ' ', !, findIncludes(1, Rc, Curr, Res) ;
+	Matches = 1, C = 'i', !, findIncludes(2, Rc, Curr, Res) ;
+	Matches = 2, C = 'n', !, findIncludes(3, Rc, Curr, Res) ;
+	Matches = 3, C = 'c', !, findIncludes(4, Rc, Curr, Res) ;
+	Matches = 4, C = 'l', !, findIncludes(5, Rc, Curr, Res) ;
+	Matches = 5, C = 'u', !, findIncludes(6, Rc, Curr, Res) ;
+	Matches = 6, C = 'd', !, findIncludes(7, Rc, Curr, Res) ;
+	Matches = 7, C = 'e', !, Next is Curr + 1, findIncludes(8, Rc, Next, Res) ;
+	Matches = 8, parseInclude([C | Rc], false, [], Include), write('Header found: '), write(Include), nl, fail ;
+	findIncludes(0, Rc, Curr, Res).
 
 parseInclude([C | _], Accumulate, Accum, Accum) :-
 	C = '"', Accumulate, !.
