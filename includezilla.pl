@@ -18,6 +18,8 @@
 %% along with IncludeZilla.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
+:- include(config).
+
 %% PUBLIC RULES.
 
 includeZilla(ProjectRoot) :-
