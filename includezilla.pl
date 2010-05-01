@@ -34,7 +34,7 @@ process(end-of-file) :-
 	!.
 
 process(Contents) :-
-	findIncludes(0, Contents, 0, Res), Res \= 0.
+	findIncludes(0, Contents, [], Res), Res \= [], write('Found headers: '), write(Res).
 
 findIncludes(_, [], Curr, Curr) :- !.
 
@@ -47,8 +47,8 @@ findIncludes(Matches, [C | Rc], Curr, Res) :-
 	Matches = 4, C = 'l', !, findIncludes(5, Rc, Curr, Res) ;
 	Matches = 5, C = 'u', !, findIncludes(6, Rc, Curr, Res) ;
 	Matches = 6, C = 'd', !, findIncludes(7, Rc, Curr, Res) ;
-	Matches = 7, C = 'e', !, Next is Curr + 1, findIncludes(8, Rc, Next, Res) ;
-	Matches = 8, parseInclude([C | Rc], false, [], Include), write('Header found: '), write(Include), nl, fail ;
+	Matches = 7, C = 'e', !, parseInclude(Rc, false, [], Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res) ;
+	Matches = 8, fail ;
 	findIncludes(0, Rc, Curr, Res).
 
 parseInclude([C | _], Accumulate, Accum, Accum) :-
