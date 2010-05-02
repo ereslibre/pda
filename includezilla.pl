@@ -68,17 +68,23 @@ fetchAllSources(Folder) :-
 	fetchAllSourcesAux([Folder], [], Y),
 	write(Y).
 
-fetchAllSourcesAux([], X, X).
+fetchAllSourcesAux([], X, X) :- X \= [].
 
-fetchAllSourcesAux([Folder | Fs], X, Y) :-
-	exists_directory(Folder),
-	concat(Folder, '/*', F),
+fetchAllSourcesAux([File | Fs], X, Y) :-
+	exists_directory(File),
+	concat(File, '/*', F),
 	expand_file_name(F, R),
 	append(R, Fs, Remaining),
-	removeFromList(Folder, X, X1),
+	removeFromList(File, X, X1),
 	append(X1, R, R2),
 	fetchAllSourcesAux(Remaining, R2, Y), ! ;
-	fetchAllSourcesAux(Fs, X, Y).
+	isSourceFile(File),
+	fetchAllSourcesAux(Fs, X, Y), ! ;
+	removeFromList(File, X, X1),
+	fetchAllSourcesAux(Fs, X1, Y).
+
+isSourceFile(Filename) :-
+	wildcard_match('*.{h,c}', Filename).
 
 removeFromList(_, [], []).
 
