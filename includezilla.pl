@@ -39,15 +39,15 @@ process(Contents) :-
 findIncludes(_, [], Curr, Curr) :- !.
 
 findIncludes(Matches, [C | Rc], Curr, Res) :-
-	Matches = 0, C = '#', !, findIncludes(1, Rc, Curr, Res) ;
-	Matches = 1, C = ' ', !, findIncludes(1, Rc, Curr, Res) ;
-	Matches = 1, C = 'i', !, findIncludes(2, Rc, Curr, Res) ;
-	Matches = 2, C = 'n', !, findIncludes(3, Rc, Curr, Res) ;
-	Matches = 3, C = 'c', !, findIncludes(4, Rc, Curr, Res) ;
-	Matches = 4, C = 'l', !, findIncludes(5, Rc, Curr, Res) ;
-	Matches = 5, C = 'u', !, findIncludes(6, Rc, Curr, Res) ;
-	Matches = 6, C = 'd', !, findIncludes(7, Rc, Curr, Res) ;
-	Matches = 7, C = 'e', !, parseInclude(Rc, false, [], Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res) ;
+	Matches = 0, C = '#', findIncludes(1, Rc, Curr, Res), ! ;
+	Matches = 1, C = ' ', findIncludes(1, Rc, Curr, Res), ! ;
+	Matches = 1, C = 'i', findIncludes(2, Rc, Curr, Res), ! ;
+	Matches = 2, C = 'n', findIncludes(3, Rc, Curr, Res), ! ;
+	Matches = 3, C = 'c', findIncludes(4, Rc, Curr, Res), ! ;
+	Matches = 4, C = 'l', findIncludes(5, Rc, Curr, Res), ! ;
+	Matches = 5, C = 'u', findIncludes(6, Rc, Curr, Res), ! ;
+	Matches = 6, C = 'd', findIncludes(7, Rc, Curr, Res), ! ;
+	Matches = 7, C = 'e', parseInclude(Rc, false, [], Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res), ! ;
 	Matches = 8, fail ;
 	findIncludes(0, Rc, Curr, Res).
 
@@ -58,11 +58,35 @@ parseInclude([C | _], Accumulate, Accum, Accum) :-
 	C = '>', Accumulate, !.
 
 parseInclude([C | Rc], Accumulate, Accum, Include) :-
-	C = ' ', \+ Accumulate, !, parseInclude(Rc, false, Accum, Include) ;
-	C = '"', \+ Accumulate, !, parseInclude(Rc, true, Accum, Include) ;
-	C = '<', \+ Accumulate, !, parseInclude(Rc, true, Accum, Include) ;
+	C = ' ', \+ Accumulate, parseInclude(Rc, false, Accum, Include), ! ;
+	C = '"', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
+	C = '<', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
 	append(Accum, [C], R),
 	parseInclude(Rc, true, R, Include).
+
+fetchAllSources(Folder) :-
+	fetchAllSourcesAux([Folder], [], Y),
+	write(Y).
+
+fetchAllSourcesAux([], X, X).
+
+fetchAllSourcesAux([Folder | Fs], X, Y) :-
+	exists_directory(Folder),
+	concat(Folder, '/*', F),
+	expand_file_name(F, R),
+	append(R, Fs, Remaining),
+	removeFromList(Folder, X, X1),
+	append(X1, R, R2),
+	fetchAllSourcesAux(Remaining, R2, Y), ! ;
+	fetchAllSourcesAux(Fs, X, Y).
+
+removeFromList(_, [], []).
+
+removeFromList(E, [E | Re], Re2) :-
+	removeFromList(E, Re, Re2), !.
+
+removeFromList(E, [F | Rf], [F | Rf2]) :-
+	removeFromList(E, Rf, Rf2).
 
 % getFileContents taken from:
 % http://gollem.swi.psy.uva.nl/SWI-Prolog/mailinglist/archive/old/0517.html
