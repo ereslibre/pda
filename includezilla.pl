@@ -61,12 +61,10 @@ parseInclude([C | Rc], Accumulate, Accum, Include) :-
 	C = ' ', \+ Accumulate, parseInclude(Rc, false, Accum, Include), ! ;
 	C = '"', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
 	C = '<', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
-	append(Accum, [C], R),
-	parseInclude(Rc, true, R, Include).
+	append(Accum, [C], R), parseInclude(Rc, true, R, Include).
 
-fetchAllSources(Folder) :-
-	fetchAllSourcesAux([Folder], [], Y),
-	write(Y).
+fetchAllSources(Folder, Sources) :-
+	fetchAllSourcesAux([Folder], [], Sources).
 
 fetchAllSourcesAux([], X, X) :- X \= [].
 
