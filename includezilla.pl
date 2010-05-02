@@ -102,3 +102,11 @@ getFileContents(In, XS) :-
          XS = [] ;
 		 getFileContents(In, XS1), XS = [X | XS1]
     ).
+
+:- nl,
+   write('>> IncludeZilla version 1.0. Usage:'), nl, write('>>'), nl,
+   write('>>>  includeZilla(ProjectRootFolder).    Checks whether certain include declarations'), nl,
+   write('>>>                                      can be safely removed.'), nl, write('>>>'), nl,
+   write('>>>  statistics(ProjectRootFolder).      Generate statistics about which files are the'), nl,
+   write('>>>                                      most included ones.'), nl,
+   nl.
