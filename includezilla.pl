@@ -55,7 +55,7 @@ findIncludes(Matches, [C | Rc], Curr, Res) :-
 	Matches = 4, C = 'l', findIncludes(5, Rc, Curr, Res), ! ;
 	Matches = 5, C = 'u', findIncludes(6, Rc, Curr, Res), ! ;
 	Matches = 6, C = 'd', findIncludes(7, Rc, Curr, Res), ! ;
-	Matches = 7, C = 'e', parseInclude(Rc, false, [], Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res), ! ;
+	Matches = 7, C = 'e', parseInclude(Rc, false, '', Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res), ! ;
 	Matches = 8, fail ;
 	findIncludes(0, Rc, Curr, Res).
 
@@ -69,7 +69,7 @@ parseInclude([C | Rc], Accumulate, Accum, Include) :-
 	C = ' ', \+ Accumulate, parseInclude(Rc, false, Accum, Include), ! ;
 	C = '"', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
 	C = '<', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
-	append(Accum, [C], R), parseInclude(Rc, true, R, Include).
+	concat(Accum, C, R), parseInclude(Rc, true, R, Include).
 
 fetchAllSources(Folder, Sources) :-
 	fetchAllSourcesAux([Folder], [], Sources).
