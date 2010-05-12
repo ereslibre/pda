@@ -23,18 +23,26 @@
 %% PUBLIC RULES.
 
 includeZilla(ProjectRoot) :-
-	open(ProjectRoot, read, In),
+	fetchAllSources(ProjectRoot, Temp),
+	includeZillaFile(Temp).
+
+includeZillaFile([]).
+
+includeZillaFile([X | Xs]) :-
+	open(X, read, In),
 	getFileContents(In, Contents),
-	process(Contents),
-	close(In).
+	close(In),
+	process(X, Contents),
+	includeZillaFile(Xs), ! ;
+	includeZillaFile(Xs).
 
 %% PRIVATE RULES. NOT MEANT TO BE USED FROM THE OUTSIDE.
 
-process(end-of-file) :-
+process(_, end-of-file) :-
 	!.
 
-process(Contents) :-
-	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes: '), write(Res).
+process(Filename, Contents) :-
+	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes ('), write(Filename), write('):'), write(Res), nl.
 
 findIncludes(_, [], Curr, Curr) :- !.
 
