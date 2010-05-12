@@ -42,7 +42,7 @@ process(_, end-of-file) :-
 	!.
 
 process(Filename, Contents) :-
-	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes ('), write(Filename), write('):'), write(Res), nl.
+	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes ('), write(Filename), write('): '), write(Res), nl.
 
 findIncludes(_, [], Curr, Curr) :- !.
 
