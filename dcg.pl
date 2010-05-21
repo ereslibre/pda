@@ -23,9 +23,9 @@ tipo(F) --> nombre(F), separadores.
 
  is_char(X) :- (is_letter(X) | (X >= "0", X =< "9")). 
 
-asteriscos --> "*", asteriscos0.
+asteriscos --> "*", separadores0, asteriscos0.
 
-asteriscos0 --> "*", asteriscos0.
+asteriscos0 --> "*", separadores0, asteriscos0.
 asteriscos0 --> [].
 
 separadores0 --> (" " | "\t" | comentarios), separadores0.
