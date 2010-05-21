@@ -6,7 +6,6 @@ findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fic
 findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0, tipo(H), nombre(R1), separadores0, "(", listaParam(R2, N), ")", separadores0, ";",
                                          { name(X, R1), Y = N }.
 
-
 listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, ",", listaParam(R2, N1), { N is N1 + 1}.
 listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre(R1), separadores0, { N is 1 }.
 listaParam([], N) --> [], { N = 0 }.
@@ -18,10 +17,11 @@ nombreRes([]) --> [].
 tipo(F) --> nombre(F), separadores0, asteriscos, separadores0.
 tipo(F) --> nombre(F), separadores.
 
- is_letter(X) :- X >= "a", X =< "z".
- is_letter(X) :- X >= "A", X =< "Z".
+is_letter(X) :- X >= "a", X =< "z".
+is_letter(X) :- X >= "A", X =< "Z".
+is_letter(X) :- X = 95. % Unificación con el valor del carácter "_"
 
- is_char(X) :- (is_letter(X) | (X >= "0", X =< "9")). 
+is_char(X) :- (is_letter(X) | (X >= "0", X =< "9")).
 
 asteriscos --> "*", separadores0, asteriscos0.
 
