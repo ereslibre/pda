@@ -3,19 +3,29 @@ findAllIncludes([], []).
 
 findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fichero(F).
 
-findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0, tipo(H), nombre(R1), separadores0, "(", listaParam(R2, N), ")", separadores0, ";",
-                                         { name(X, R1), Y = N }.
+findAllFunctionsProt(F, [K | X]) :- findFunctionsProt(_, K, F, R), findAllFunctionsProt(R, X).
+findAllFunctionsProt([], []).
 
-listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, ",", listaParam(R2, N1), { N is N1 + 1}.
-listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre(R1), separadores0, { N is 1 }.
+findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0,
+                                               tipo(H),
+                                               nombre(R1),
+                                               separadores0, "(", listaParam(R2, N), ")",
+                                               separadores0, (";" | "{"),
+                                               { name(X, R1), Y = N }.
+
+listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, ",", listaParam(R2, N1), { N is N1 + 1}.
+listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, { N is 1 }.
 listaParam([], N) --> [], { N = 0 }.
 
 nombre([C | R]) --> [C], { is_letter(C) }, nombreRes(R).
 nombreRes([C | R]) --> [C], { is_char(C) }, nombreRes(R).
 nombreRes([]) --> [].
 
+nombre0([C | R]) --> [C], { is_letter(C) }, nombreRes(R).
+nombre0([]) --> [].
+
 tipo(F) --> nombre(F), separadores0, asteriscos, separadores0.
-tipo(F) --> nombre(F), separadores.
+tipo(F) --> nombre(F), separadores0.
 
 is_letter(X) :- X >= "a", X =< "z".
 is_letter(X) :- X >= "A", X =< "Z".
