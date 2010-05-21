@@ -13,6 +13,36 @@ findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0,
                                                separadores0, (";" | "{"),
                                                { name(X, R1), Y = N }.
 
+findFunctionsProt([H | [R1|[R2|[R3|[R4]]]]], (X, Y)) --> separadores0,
+                                                    nombre(H),
+                                                    separadores,
+                                                    tipo(R1),
+                                                    separadores,
+                                                    nombre(R2),
+                                                    separadores,
+                                                    nombre(R3),
+                                                    separadores0, "(", listaParam(R4, N), ")",
+                                                    separadores0, (";" | "{"),
+                                                    { name(X, R3), Y = N }.
+
+findFunctionsProt([H | [R1|[R2|[R3]]]], (X, Y)) --> separadores0,
+                                                    nombre(H),
+                                                    separadores,
+                                                    tipo(R1),
+                                                    nombre(R2),
+                                                    separadores0, "(", listaParam(R3, N), ")",
+                                                    separadores0, (";" | "{"),
+                                                    { name(X, R2), Y = N }.
+
+findFunctionsProt([H | [R1|[R2|[R3]]]], (X, Y)) --> separadores0,
+                                                    tipo(H),
+                                                    nombre0(R1),
+                                                    separadores,
+                                                    nombre(R2),
+                                                    separadores0, "(", listaParam(R3, N), ")",
+                                                    separadores0, (";" | "{"),
+                                                    { name(X, R2), Y = N }.
+
 listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, ",", listaParam(R2, N1), { N is N1 + 1}.
 listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, { N is 1 }.
 listaParam([], N) --> [], { N = 0 }.
