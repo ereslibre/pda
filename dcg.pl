@@ -22,7 +22,7 @@ cadena1([]) --> [].
 
 % Reglas del preprocesado del fichero
 % Eliminan comentarios y saltos inecesarios. Al finalizar obtenemos un fichero
-% donde cada salto de línea es precedido por ;
+% donde cada salto de lÃ­nea es precedido por ;
 
 %preprocesador(F) --> comentarios, linea(F).
 linea(F) --> nosep(R), { name(F, R) }.
