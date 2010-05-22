@@ -1,10 +1,26 @@
-findAllIncludes(F, [L | X]) :- findInclude(L, F, R), findAllIncludes(R, X).
-findAllIncludes([], []).
+%findAllIncludes(F, [L | X]) :- findInclude(L, F, R), findAllIncludes(R, X).
+%findAllIncludes([], []).
 
 findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fichero(F).
 
-findAllFunctionsProt(F, [K | X]) :- findFunctionsProt(_, K, F, R), findAllFunctionsProt(R, X).
-findAllFunctionsProt([], []).
+findIncludes([H|[R1|R2]], [R1 | C]) --> anychar(H), "#", separadores0, "include", separadores0, 
+                                        fichero(R1), findIncludes(R2,C).
+findIncludes([],[]) --> []. 
+
+
+anychar([C | R])--> [C], { not_square(C) }, !, anychar(R).
+anychar([])-->[].
+
+not_square(X) :- X =\= "#".
+
+%findAllFunctionsProt(F, [K | X]) :- findFunctionsProt(_, K, F, R), findAllFunctionsProt(R, X).
+%findAllFunctionsProt([], []).
+
+findFunctionsProts([H | [R1 | R2]], [T | C]) --> anyelem(H), findFunctionsProt(R1,T), findFunctionsProts(R2,C).
+findFunctionsProts([],[]) --> [].
+
+anyelem([C | R])--> [C], { not(is_letter(C)) }, !, anyelem(R).
+anyelem([])-->[].
 
 findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0,
                                                tipo(H),
@@ -80,8 +96,8 @@ sep --> " ", sep0.
 fichero(F) --> "<", cadena(R), { name(F, R) }, ">".
 fichero(F) --> "\"", cadena(R), { name(F, R) },  "\"".
 
-cadena([C | R]) --> [C], { not(member(C, [">", "\""])) }, cadena1(R).
-cadena1([C | R]) --> [C], { not(member(C, [">", "\""])) }, cadena1(R).
+cadena([C | R]) --> [C], { not(member(C, ">\"")) }, cadena1(R).
+cadena1([C | R]) --> [C], { not(member(C, ">\"")) }, cadena1(R).
 cadena1([]) --> [].
 
 % Reglas del preprocesado del fichero

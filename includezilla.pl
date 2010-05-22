@@ -19,6 +19,7 @@
 %%
 
 :- include(config).
+:- include(dcg).
 
 %% PUBLIC RULES.
 
@@ -32,44 +33,11 @@ includeZillaFile([X | Xs]) :-
 	open(X, read, In),
 	getFileContents(In, Contents),
 	close(In),
-	process(X, Contents),
+	findAllIncludes(L, Contents, R),
 	includeZillaFile(Xs), ! ;
 	includeZillaFile(Xs).
 
 %% PRIVATE RULES. NOT MEANT TO BE USED FROM THE OUTSIDE.
-
-process(_, end-of-file) :-
-	!.
-
-process(Filename, Contents) :-
-	findIncludes(0, Contents, [], Res), Res \= [], write('Found includes ('), write(Filename), write('): '), write(Res), nl.
-
-findIncludes(_, [], Curr, Curr) :- !.
-
-findIncludes(Matches, [C | Rc], Curr, Res) :-
-	Matches = 0, C = '#', findIncludes(1, Rc, Curr, Res), ! ;
-	Matches = 1, C = ' ', findIncludes(1, Rc, Curr, Res), ! ;
-	Matches = 1, C = 'i', findIncludes(2, Rc, Curr, Res), ! ;
-	Matches = 2, C = 'n', findIncludes(3, Rc, Curr, Res), ! ;
-	Matches = 3, C = 'c', findIncludes(4, Rc, Curr, Res), ! ;
-	Matches = 4, C = 'l', findIncludes(5, Rc, Curr, Res), ! ;
-	Matches = 5, C = 'u', findIncludes(6, Rc, Curr, Res), ! ;
-	Matches = 6, C = 'd', findIncludes(7, Rc, Curr, Res), ! ;
-	Matches = 7, C = 'e', parseInclude(Rc, false, '', Include), append(Curr, [Include], Next), findIncludes(8, Rc, Next, Res), ! ;
-	Matches = 8, fail ;
-	findIncludes(0, Rc, Curr, Res).
-
-parseInclude([C | _], Accumulate, Accum, Accum) :-
-	C = '"', Accumulate, !.
-
-parseInclude([C | _], Accumulate, Accum, Accum) :-
-	C = '>', Accumulate, !.
-
-parseInclude([C | Rc], Accumulate, Accum, Include) :-
-	C = ' ', \+ Accumulate, parseInclude(Rc, false, Accum, Include), ! ;
-	C = '"', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
-	C = '<', \+ Accumulate, parseInclude(Rc, true, Accum, Include), ! ;
-	concat(Accum, C, R), parseInclude(Rc, true, R, Include).
 
 fetchAllSources(Folder, Sources) :-
 	fetchAllSourcesAux([Folder], [], Sources).
