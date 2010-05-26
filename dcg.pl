@@ -17,6 +17,7 @@ not_square(X) :- X =\= "#".
 %findAllFunctionsProt([], []).
 
 findFunctionsProts([H | [R1 | R2]], [T | C]) --> anyelem(H), findFunctionsProt(R1,T), findFunctionsProts(R2,C).
+findFunctionsProts([H | R1], C) --> [H], findFunctionsProts(R1, C).
 findFunctionsProts([],[]) --> [].
 
 anyelem([C | R])--> [C], { not(is_letter(C)) }, !, anyelem(R).
