@@ -85,7 +85,7 @@ asteriscos --> "*", separadores0, asteriscos0.
 asteriscos0 --> "*", separadores0, asteriscos0.
 asteriscos0 --> [].
 
-separadores0 --> (" " | "\t" | comentarios), separadores0.
+separadores0 --> (" " | "\t" | "\n" | comentarios), separadores0.
 separadores0 --> [].
 
 separadores --> " " , separadores0.
