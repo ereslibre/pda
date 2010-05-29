@@ -1,7 +1,7 @@
 findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fichero(F).
 
 findIncludes([H|[R1|R2]], [R1 | C]) --> anychar(H), "#", separadores0, "include", separadores0, 
-                                        fichero(R1), findIncludes(R2,C).
+                                        fichero(R1), !, findIncludes(R2,C).
 findIncludes([],[]) --> []. 
 
 
