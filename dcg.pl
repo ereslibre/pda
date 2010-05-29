@@ -17,7 +17,7 @@ not_square(X) :- X \= 105. % Valor del carácter "#"
 %findAllFunctionsProt(F, [K | X]) :- findFunctionsProt(_, K, F, R), findAllFunctionsProt(R, X).
 %findAllFunctionsProt([], []).
 
-findFunctionsProts([H | [R1 | R2]], [T | C]) --> anyelem(H), findFunctionsProt(R1,T), findFunctionsProts(R2,C).
+findFunctionsProts([H | [R1 | R2]], [T | C]) --> anyelem(H), findFunctionsProt(R1,T), !, findFunctionsProts(R2,C).
 findFunctionsProts([H | R1], C) --> [H], findFunctionsProts(R1, C).
 findFunctionsProts([],[]) --> [].
 
