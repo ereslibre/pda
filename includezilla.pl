@@ -70,8 +70,8 @@ removeFromList(E, [F | Rf], [F | Rf2]) :-
 
 processAllContents(In) :-
 	getFileContents(In, XS), XS \= [] ->
-	(findIncludes(_, Res, XS, _), Res \= [], write(Res), processAllContents(In) ;
-	(findFunctionsProts(_, Res, XS, _), Res \= [], write(Res), processAllContents(In))).
+	(findIncludes(_, Res, XS, _), Res \= [], !, write(Res), processAllContents(In) ;
+	(findFunctionsProts(_, Res, XS, _), Res \= [], !, write(Res), processAllContents(In))).
 
 getFileContents(In, XS) :-
 	getFileContentsAux(In, XS, '', 0).
