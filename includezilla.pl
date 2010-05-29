@@ -86,6 +86,7 @@ getFileContentsAux(In, XS, Prev, 0) :-
 		 X = '/' -> getFileContentsAux(In, XS, X, 3), ! ;
 		 X = '#' -> getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], ! ;
 		 X = ';' -> XS = [X], ! ;
+		 X = '\n' -> getFileContentsAux(In, XS, X, 0), ! ;
 		 getFileContentsAux(In, XS1, X, 0), XS = [X | XS1], !).
 
 getFileContentsAux(In, XS, Prev, 1) :-
@@ -110,7 +111,7 @@ getFileContentsAux(In, XS, Prev, 3) :-
 getFileContentsAux(In, XS, Prev, 4) :-
 	get_char(In, X),
 		(X = end_of_file -> XS = [], ! ;
-		 X = '\n' -> XS = [X], ! ;
+		 X = '\n' -> XS = [], ! ;
 		 getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], !).
 
 getFileContentsAux(_, [], _, _).
