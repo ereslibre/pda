@@ -70,30 +70,38 @@ removeFromList(E, [F | Rf], [F | Rf2]) :-
 	removeFromList(E, Rf, Rf2).
 
 getFileContents(In, XS) :-
-	getFileContentsAux(In, XS, " ", 0).
+	getFileContentsAux(In, XS, '', 0).
 
 % parsing = 0, código
 % parsing = 1, comentario multilínea
 % parsing = 2, comentario línea
 % parsing = 3, comentario => hemos encontrado "/"
-getFileContentsAux2([X | Xs], XS, Prev, 0) :-
-	member(X, "/") -> getFileContentsAux2(Xs, XS, X, 3), ! ;
-	getFileContentsAux2(Xs, XS1, X, 0), !, XS = [X | XS1].
+getFileContentsAux(In, XS, Prev, 0) :-
+	get_char(In, X),
+		(X = end_of_file -> XS = [], ! ;
+		 X = '/' -> getFileContentsAux(In, XS, X, 3), ! ;
+		 getFileContentsAux(In, XS1, X, 0), XS = [X | XS1], !).
 
-getFileContentsAux2([X | Xs], XS, Prev, 1) :-
-	member(Prev,  "*"), member(X, "/") -> getFileContentsAux2(Xs, XS, X, 0), ! ;
-	getFileContentsAux2(Xs, XS, X, 1), !.
+getFileContentsAux(In, XS, Prev, 1) :-
+	get_char(In, X),
+		(X = end_of_file -> XS = [], ! ;
+		 Prev = '*', X = '/' -> getFileContentsAux(In, XS, X, 0), ! ;
+		 getFileContentsAux(In, XS, X, 1), !).
 
-getFileContentsAux2([X | Xs], XS, Prev, 2) :-
-	member(X, "\n") -> getFileContentsAux2(Xs, XS, X, 0), ! ;
-	getFileContentsAux2(Xs, XS, X, 2), !.
+getFileContentsAux(In, XS, Prev, 2) :-
+	get_char(In, X),
+		(X = end_of_file -> XS = [], ! ;
+		 X = '\n' -> getFileContentsAux(In, XS, X, 0), ! ;
+		 getFileContentsAux(In, XS, X, 2), !).
 
-getFileContentsAux2([X | Xs], XS, Prev, 3) :-
-	member(X, "*") -> getFileContentsAux2(Xs, XS, X, 1), ! ;
-	member(X, "/") -> getFileContentsAux2(Xs, XS, X, 2), ! ;
-	getFileContentsAux2(Xs, XS1, X, 0), !, XS = [Prev | [X | [XS1]]].
+getFileContentsAux(In, XS, Prev, 3) :-
+	get_char(In, X),
+		(X = end_of_file -> XS = [], ! ;
+		 X = '*' -> getFileContentsAux(In, XS, X, 1), ! ;
+		 X = '/' -> getFileContentsAux(In, XS, X, 2), ! ;
+		 getFileContentsAux(In, XS1, X, 0), XS = [Prev | [X | XS1]], !).
 
-getFileContentsAux2([], [], _, _).
+getFileContentsAux(_, [], _, _).
 
 :- nl,
    write('>> IncludeZilla version 1.0. Usage:'), nl, write('>>'), nl,
