@@ -69,7 +69,7 @@ removeFromList(E, [F | Rf], [F | Rf2]) :-
 	removeFromList(E, Rf, Rf2).
 
 processAllContents(In) :-
-	getFileContents(In, XS), XS \= [], findAllIncludes(XS, Res), write(Res), processAllContents(In).
+	getFileContents(In, XS), XS \= [], write(XS), findAllIncludes(XS, Res), write(Res), processAllContents(In).
 
 getFileContents(In, XS) :-
 	getFileContentsAux(In, XS, '', 0).
@@ -80,39 +80,39 @@ getFileContents(In, XS) :-
 % parsing = 3, comentario => hemos encontrado "/"
 % parsing = 4, hemos encontrado "#", sigue hasta fin de línea
 
-getFileContentsAux(In, XS, Prev, 0) :-
-	get_char(In, X),
-		(X = end_of_file -> XS = [], ! ;
-		 X = '/' -> getFileContentsAux(In, XS, X, 3), ! ;
-		 X = '#' -> getFileContentsAux(In, XS1, X, 4), atom_codes(X, Y), append(Y, XS1, XS), ! ;
-		 X = ';' -> atom_codes(X, XS), ! ;
-		 X = '\n' -> getFileContentsAux(In, XS, X, 0), ! ;
-		 getFileContentsAux(In, XS1, X, 0), atom_codes(X, Y), append(Y, XS1, XS), !).
+getFileContentsAux(In, XS, _, 0) :-
+	get_char(In, Y),
+		(Y = end_of_file -> XS = [], ! ;
+		 Y = '/' -> getFileContentsAux(In, XS, Y, 3), ! ;
+		 Y = '#' -> getFileContentsAux(In, XS1, Y, 4), char_code(Y, X), XS = [X | XS1], ! ;
+		 Y = ';' -> char_code(Y, X), XS = [X], ! ;
+		 Y = '\n' -> getFileContentsAux(In, XS, Y, 0), ! ;
+		 getFileContentsAux(In, XS1, Y, 0), char_code(Y, X), XS = [X | XS1], !).
 
 getFileContentsAux(In, XS, Prev, 1) :-
-	get_char(In, X),
-		(X = end_of_file -> XS = [], ! ;
-		 Prev = '*', X = '/' -> getFileContentsAux(In, XS, X, 0), ! ;
-		 getFileContentsAux(In, XS, X, 1), !).
+	get_char(In, Y),
+		(Y = end_of_file -> XS = [], ! ;
+		 Prev = '*', Y = '/' -> getFileContentsAux(In, XS, Y, 0), ! ;
+		 getFileContentsAux(In, XS, Y, 1), !).
 
-getFileContentsAux(In, XS, Prev, 2) :-
-	get_char(In, X),
-		(X = end_of_file -> XS = [], ! ;
-		 X = '\n' -> getFileContentsAux(In, XS, X, 0), ! ;
-		 getFileContentsAux(In, XS, X, 2), !).
+getFileContentsAux(In, XS, _, 2) :-
+	get_char(In, Y),
+		(Y = end_of_file -> XS = [], ! ;
+		 Y = '\n' -> getFileContentsAux(In, XS, Y, 0), ! ;
+		 getFileContentsAux(In, XS, Y, 2), !).
 
 getFileContentsAux(In, XS, Prev, 3) :-
-	get_char(In, X),
-		(X = end_of_file -> XS = [], ! ;
-		 X = '*' -> getFileContentsAux(In, XS, X, 1), ! ;
-		 X = '/' -> getFileContentsAux(In, XS, X, 2), ! ;
-		 getFileContentsAux(In, XS1, X, 0), atom_codes(X, Y), atom_codes(Prev, PrevY), append(Y, XS1, R1), append(PrevY, R1, XS), !).
+	get_char(In, Y),
+		(Y = end_of_file -> XS = [], ! ;
+		 Y = '*' -> getFileContentsAux(In, XS, Y, 1), ! ;
+		 Y = '/' -> getFileContentsAux(In, XS, Y, 2), ! ;
+		 getFileContentsAux(In, XS1, Y, 0), char_code(Y, X), XS = [Prev | [X | XS1]], !).
 
-getFileContentsAux(In, XS, Prev, 4) :-
-	get_char(In, X),
-		(X = end_of_file -> XS = [], ! ;
-		 X = '\n' -> XS = [], ! ;
-		 getFileContentsAux(In, XS1, X, 4), atom_codes(X, Y), append(Y, XS1, XS), !).
+getFileContentsAux(In, XS, _, 4) :-
+	get_char(In, Y),
+		(Y = end_of_file -> XS = [], ! ;
+		 Y = '\n' -> XS = [], ! ;
+		 getFileContentsAux(In, XS1, Y, 4), char_code(Y, X), XS = [X | XS1], !).
 
 getFileContentsAux(_, [], _, _).
 
