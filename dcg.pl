@@ -1,6 +1,3 @@
-findAllIncludes(F, [L | X]) :- findInclude(L, F, R), findAllIncludes(R, X).
-findAllIncludes([], []).
-
 findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fichero(F).
 
 findIncludes([H|[R1|R2]], [R1 | C]) --> anychar(H), "#", separadores0, "include", separadores0, 
@@ -8,10 +5,14 @@ findIncludes([H|[R1|R2]], [R1 | C]) --> anychar(H), "#", separadores0, "include"
 findIncludes([],[]) --> []. 
 
 
-anychar([C | R])--> [C], { not_square(C) }, !, anychar(R).
+anychar([C | R])--> [C], { not_square(C) }, anychar(R).
 anychar([])-->[].
 
-not_square(X) :- X =\= "#".
+not_square(X) :- X \= 105. % Valor del carácter "#"
+
+
+
+
 
 %findAllFunctionsProt(F, [K | X]) :- findFunctionsProt(_, K, F, R), findAllFunctionsProt(R, X).
 %findAllFunctionsProt([], []).
@@ -20,7 +21,7 @@ findFunctionsProts([H | [R1 | R2]], [T | C]) --> anyelem(H), findFunctionsProt(R
 findFunctionsProts([H | R1], C) --> [H], findFunctionsProts(R1, C).
 findFunctionsProts([],[]) --> [].
 
-anyelem([C | R])--> [C], { not(is_letter(C)) }, !, anyelem(R).
+anyelem([C | R])--> [C], { not(is_letter(C)) }, anyelem(R).
 anyelem([])-->[].
 
 findFunctionsProt([H | [R1|[R2]]], (X, Y)) --> separadores0,
@@ -76,7 +77,7 @@ tipo(F) --> nombre(F), separadores0.
 
 is_letter(X) :- X >= "a", X =< "z".
 is_letter(X) :- X >= "A", X =< "Z".
-is_letter(X) :- X = 95. % Unificación con el valor del carácter "_"
+is_letter(X) :- X = 95. % Valor del carácter "_"
 
 is_char(X) :- (is_letter(X) | (X >= "0", X =< "9")).
 
