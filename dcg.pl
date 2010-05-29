@@ -1,5 +1,5 @@
-%findAllIncludes(F, [L | X]) :- findInclude(L, F, R), findAllIncludes(R, X).
-%findAllIncludes([], []).
+findAllIncludes(F, [L | X]) :- findInclude(L, F, R), findAllIncludes(R, X).
+findAllIncludes([], []).
 
 findInclude(F) --> separadores0, "#", separadores0, "include", separadores0, fichero(F).
 
