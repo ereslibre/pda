@@ -69,7 +69,7 @@ removeFromList(E, [F | Rf], [F | Rf2]) :-
 	removeFromList(E, Rf, Rf2).
 
 processAllContents(In) :-
-	getFileContents(In, XS), XS \= [], write(XS), processAllContents(In).
+	getFileContents(In, XS), XS \= [], findAllIncludes(XS, Res), write(Res), processAllContents(In).
 
 getFileContents(In, XS) :-
 	getFileContentsAux(In, XS, '', 0).
@@ -84,10 +84,10 @@ getFileContentsAux(In, XS, Prev, 0) :-
 	get_char(In, X),
 		(X = end_of_file -> XS = [], ! ;
 		 X = '/' -> getFileContentsAux(In, XS, X, 3), ! ;
-		 X = '#' -> getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], ! ;
-		 X = ';' -> XS = [X], ! ;
+		 X = '#' -> getFileContentsAux(In, XS1, X, 4), atom_codes(X, Y), append(Y, XS1, XS), ! ;
+		 X = ';' -> atom_codes(X, XS), ! ;
 		 X = '\n' -> getFileContentsAux(In, XS, X, 0), ! ;
-		 getFileContentsAux(In, XS1, X, 0), XS = [X | XS1], !).
+		 getFileContentsAux(In, XS1, X, 0), atom_codes(X, Y), append(Y, XS1, XS), !).
 
 getFileContentsAux(In, XS, Prev, 1) :-
 	get_char(In, X),
@@ -106,13 +106,13 @@ getFileContentsAux(In, XS, Prev, 3) :-
 		(X = end_of_file -> XS = [], ! ;
 		 X = '*' -> getFileContentsAux(In, XS, X, 1), ! ;
 		 X = '/' -> getFileContentsAux(In, XS, X, 2), ! ;
-		 getFileContentsAux(In, XS1, X, 0), XS = [Prev | [X | XS1]], !).
+		 getFileContentsAux(In, XS1, X, 0), atom_codes(X, Y), atom_codes(Prev, PrevY), append(Y, XS1, R1), append(PrevY, R1, XS), !).
 
 getFileContentsAux(In, XS, Prev, 4) :-
 	get_char(In, X),
 		(X = end_of_file -> XS = [], ! ;
 		 X = '\n' -> XS = [], ! ;
-		 getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], !).
+		 getFileContentsAux(In, XS1, X, 4), atom_codes(X, Y), append(Y, XS1, XS), !).
 
 getFileContentsAux(_, [], _, _).
 
