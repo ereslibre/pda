@@ -31,8 +31,7 @@ includeZillaFile([]).
 
 includeZillaFile([X | Xs]) :-
 	open(X, read, In),
-	getFileContents(In, Contents),
-	write(Contents).
+	processAllContents(In).
 	%% close(In),
 	%% findAllIncludes(L, Contents, R),
 	%% includeZillaFile(Xs), ! ;
@@ -69,6 +68,9 @@ removeFromList(E, [E | Re], Re2) :-
 removeFromList(E, [F | Rf], [F | Rf2]) :-
 	removeFromList(E, Rf, Rf2).
 
+processAllContents(In) :-
+	getFileContents(In, XS), XS \= [], write(XS), processAllContents(In).
+
 getFileContents(In, XS) :-
 	getFileContentsAux(In, XS, '', 0).
 
@@ -76,10 +78,13 @@ getFileContents(In, XS) :-
 % parsing = 1, comentario multilínea
 % parsing = 2, comentario línea
 % parsing = 3, comentario => hemos encontrado "/"
+% parsing = 4, hemos encontrado "#", sigue hasta fin de línea
+
 getFileContentsAux(In, XS, Prev, 0) :-
 	get_char(In, X),
 		(X = end_of_file -> XS = [], ! ;
 		 X = '/' -> getFileContentsAux(In, XS, X, 3), ! ;
+		 X = '#' -> getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], ! ;
 		 getFileContentsAux(In, XS1, X, 0), XS = [X | XS1], !).
 
 getFileContentsAux(In, XS, Prev, 1) :-
@@ -100,6 +105,12 @@ getFileContentsAux(In, XS, Prev, 3) :-
 		 X = '*' -> getFileContentsAux(In, XS, X, 1), ! ;
 		 X = '/' -> getFileContentsAux(In, XS, X, 2), ! ;
 		 getFileContentsAux(In, XS1, X, 0), XS = [Prev | [X | XS1]], !).
+
+getFileContentsAux(In, XS, Prev, 4) :-
+	get_char(In, X),
+		(X = end_of_file -> XS = [], ! ;
+		 X = '\n' -> XS = [X], ! ;
+		 getFileContentsAux(In, XS1, X, 4), XS = [X | XS1], !).
 
 getFileContentsAux(_, [], _, _).
 
