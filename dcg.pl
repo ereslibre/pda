@@ -62,9 +62,12 @@ findFunctionsProt([H | [R1|[R2|[R3]]]], (X, Y)) --> separadores0,
                                                     { name(X, R2), Y = N }.
 
 listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, ",", listaParam(R2, N1), { N is N1 + 1}.
+listaParam([H | [R1|[R2|[R3]]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, "=", separadores0, nombreONum(R2), separadores0, ",", listaParam(R3, N1), { N is N1 + 1}.
 listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, { N is 1 }.
+listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, "=", separadores0, nombreONum(R2), separadores0, { N is 1 }.
 listaParam([], N) --> [], { N = 0 }.
 
+nombreONum([C | R]) --> [C], { is_char(C) }, nombreRes(R).
 nombre([C | R]) --> [C], { is_letter(C) }, nombreRes(R).
 nombreRes([C | R]) --> [C], { is_char(C) }, nombreRes(R).
 nombreRes([]) --> [].
