@@ -56,6 +56,14 @@ findFunctionsProt([H | [R1|[R2|[R3]]]], (X, Y)) --> separadores0,
                                                     separadores0, (";" | "{"),
                                                     { name(X, R2), Y = N }.
 
+findFunctionsImpls([H | [R1 | [R2 | [R3 | [R4 | R5]]]]], [T | C]) --> anychar(H), "{",
+	                                                                  anychar(R1), findFunctionsImpl(R2,T),
+                                                                      anychar(R3), findFunctionsImplsAux(R4,C),
+                                                                      "}", anychar(R5).
+findFunctionsImplsAux([H | R1], [T | C]) --> findFunctionsImpl(H,T), findFunctionsImplsAux(R1,C).
+findFunctionsImplsAux([],[]) --> [].
+
+
 findFunctionsImpl([H | [R1]], [(X, Y) | Z]) --> separadores0,
                                                 nombre(H),
                                                 separadores0, "(", listaParamImpl(R1, N, Z), ")",
