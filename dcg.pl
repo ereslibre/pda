@@ -60,7 +60,7 @@ findFunctionsImpls([H|[R1|[R2|[R3|[R4|[R5]]]]]], [T | C]) --> anychar(H), "{",
 	                                                                  anychar(R1), findFunctionsImpl(R2,T),
                                                                       anychar(R3), findFunctionsImplsAux(R4,C),
                                                                       "}", anychar(R5).
-findFunctionsImplsAux([H | R1], [T | C]) --> findFunctionsImpl(H,T), !, findFunctionsImplsAux(R1,C).
+findFunctionsImplsAux([H | R1], [T | C]) --> findFunctionsImpl(H,T), findFunctionsImplsAux(R1,C).
 findFunctionsImplsAux([H | R1], C) --> [H], findFunctionsImplsAux(R1,C).
 findFunctionsImplsAux([],[]) --> [].
 
@@ -70,8 +70,8 @@ findFunctionsImpl([H | [R1]], [(X, Y) | Z]) --> separadores0,
                                                 separadores0, "(", listaParamImpl(R1, N, Z), ")",
                                                 { name(X, H), Y = N }.
 
-listaParamImpl([H | [R1]], N, Z) --> separadores0, findFunctionsImpl(H, Z1), separadores0, ",", listaParamImpl(R1, N1, Z2), !, { append(Z1, Z2, Z), N is N1 + 1 }.
-listaParamImpl([H | [R1]], N, Z) --> separadores0, nombreONum(H), separadores0, ",", listaParamImpl(R1, N1, Z), !, { N is N1 + 1 }.
+listaParamImpl([H | [R1]], N, Z) --> separadores0, findFunctionsImpl(H, Z1), separadores0, ",", listaParamImpl(R1, N1, Z2), { append(Z1, Z2, Z), N is N1 + 1 }.
+listaParamImpl([H | [R1]], N, Z) --> separadores0, nombreONum(H), separadores0, ",", listaParamImpl(R1, N1, Z), { N is N1 + 1 }.
 listaParamImpl([H], 1, Z) --> separadores0, findFunctionsImpl(H, Z), separadores0.
 listaParamImpl([H], 1, []) --> separadores0, nombreONum(H), separadores0.
 listaParamImpl([], 0, []) --> separadores0.
