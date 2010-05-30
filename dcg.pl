@@ -56,20 +56,22 @@ findFunctionsProt([H | [R1|[R2|[R3]]]], (X, Y)) --> separadores0,
                                                     separadores0, (";" | "{"),
                                                     { name(X, R2), Y = N }.
 
-findFunctionsImpl([H | [R1]], (X, Y)) --> separadores0,
-                                          nombre(H),
-                                          separadores0, "(", listaParamImpl(R1, N), !, ")",
-                                          { name(X, H), Y = N }.
+findFunctionsImpl([H | [R1]], [(X, Y) | Z]) --> separadores0,
+                                                nombre(H),
+                                                separadores0, "(", listaParamImpl(R1, N, Z), ")",
+                                                { name(X, H), Y = N }.
 
-listaParamImpl([H | [R1]], N) --> separadores0, nombreONum(H), separadores0, ",", listaParamImpl(R1, N1), !, { N is N1 + 1 }.
-listaParamImpl([H], N) --> separadores0, nombreONum(H), separadores0, { N is 1 }.
-listaParamImpl([], N) --> separadores0, { N = 0 }.
+listaParamImpl([H | [R1]], N, Z) --> separadores0, findFunctionsImpl(H, Z), separadores0, ",", listaParamImpl(R1, N1, Z), !, { N is N1 + 1 }.
+listaParamImpl([H | [R1]], N, Z) --> separadores0, nombreONum(H), separadores0, ",", listaParamImpl(R1, N1, Z), !, { N is N1 + 1 }.
+listaParamImpl([H], 1, Z) --> separadores0, findFunctionsImpl(H, Z), separadores0.
+listaParamImpl([H], 1, []) --> separadores0, nombreONum(H), separadores0.
+listaParamImpl([], 0, []) --> separadores0.
 
 listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, ",", listaParam(R2, N1), !, { N is N1 + 1 }.
 listaParam([H | [R1|[R2|[R3]]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, "=", separadores0, nombreONum(R2), separadores0, ",", listaParam(R3, N1), !, { N is N1 + 1}.
-listaParam([H | [R1]], N) --> separadores0, tipo(H), nombre0(R1), separadores0, { N is 1 }.
-listaParam([H | [R1|[R2]]], N) --> separadores0, tipo(H), nombre(R1), separadores0, "=", separadores0, nombreONum(R2), separadores0, { N is 1 }.
-listaParam([], N) --> separadores0, { N = 0 }.
+listaParam([H | [R1]], 1) --> separadores0, tipo(H), nombre0(R1), separadores0.
+listaParam([H | [R1|[R2]]], 1) --> separadores0, tipo(H), nombre(R1), separadores0, "=", separadores0, nombreONum(R2), separadores0.
+listaParam([], 0) --> separadores0.
 
 nombreONum([C | R]) --> [C], { is_char(C) }, nombreRes(R).
 nombre([C | R]) --> [C], { is_letter(C) }, nombreRes(R).
